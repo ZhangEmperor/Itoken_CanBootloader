@@ -9,11 +9,12 @@ class upgradeth : public QObject
 public:
     explicit upgradeth(QObject *parent = nullptr);
 
-    void setparam(int devicetype, int deviceindex, int canindex, bool in_allchoose, QStringList in_idlist, QStringList in_typelist, QString in_filename);
+    void setparam(int devicetype, int deviceindex, int canindex, bool in_allchoose, \
+                  QStringList in_idlist, QStringList in_typelist, QString in_filename, int crclen);
 
     int erase_func(QString nodestr);
-    int writeinfo_func(QString nodestr, unsigned int deviation, unsigned int step_len, unsigned int crclen);
-    int write_func(QString nodestr, unsigned char *writedata, unsigned int datalen, unsigned int crclen);
+    int writeinfo_func(QString nodestr, unsigned int deviation, unsigned int step_len, int crclen);
+    int write_func(QString nodestr, unsigned char *writedata, unsigned int datalen, int crclen);
     int exec_newapp(QString nodestr);
 
 signals:
@@ -29,6 +30,7 @@ private:
     QStringList typelist;
     QString filename;
     int count;
+    int icrclen;
 
 
 };

@@ -212,19 +212,34 @@ void MainWindow::on_pushButton_upgrade_clicked()
     QStringList typelist;
     QString filename = ui->lineEdit_filename->text();
     int i;
-    if (count < ui->tableWidget->rowCount()) {
-        qDebug()<<"多选";
+    int crcflag = 0;
+    if (count <= 0) {
+        return ;
+    }
+    if (ui->tableWidget->rowCount() == 1 && count == 1) {
         allchoose = false;
     }
     else {
-        qDebug()<<"全选";
-        allchoose = true;
+        if (count < ui->tableWidget->rowCount()) {
+            qDebug()<<"多选";
+            allchoose = false;
+        }
+        else {
+            qDebug()<<"全选";
+            allchoose = true;
+        }
     }
     for (i=0; i<count; i++) {
         idlist<<items.at(i)->text();
         typelist<<ui->tableWidget->item(items.at(i)->row(), 1)->text();
     }
-    upgradehandle->setparam(devicetype, deviceindex, canindex, allchoose, idlist, typelist, filename);
+    if (this->ui->checkBox_crc16->isChecked()) {
+        crcflag = 2;
+    }
+    else {
+        crcflag = 0;
+    }
+    upgradehandle->setparam(devicetype, deviceindex, canindex, allchoose, idlist, typelist, filename, crcflag);
     emit upgradesig();
 
 }

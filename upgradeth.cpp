@@ -21,7 +21,7 @@ upgradeth::upgradeth(QObject *parent) : QObject(parent)
 
 }
 
-void upgradeth::setparam(int devicetype, int deviceindex, int canindex, bool in_allchoose, QStringList in_idlist, QStringList in_typelist, QString in_filename)
+void upgradeth::setparam(int devicetype, int deviceindex, int canindex, bool in_allchoose, QStringList in_idlist, QStringList in_typelist, QString in_filename, int crclen)
 {
     m_devicetype = devicetype;
     m_deviceindex = deviceindex;
@@ -31,6 +31,7 @@ void upgradeth::setparam(int devicetype, int deviceindex, int canindex, bool in_
     typelist = in_typelist;
     filename = in_filename;
     count = idlist.count();
+    icrclen = crclen;
 }
 
 int upgradeth::erase_func(QString nodestr)
@@ -105,7 +106,7 @@ int upgradeth::erase_func(QString nodestr)
     return 0;
 }
 
-int upgradeth::writeinfo_func(QString nodestr, unsigned int deviation, unsigned int step_len, unsigned int crclen)
+int upgradeth::writeinfo_func(QString nodestr, unsigned int deviation, unsigned int step_len, int crclen)
 {
     QString step_str = QString().sprintf("%08x", step_len+crclen);
     QString sentdata_str = QString().sprintf("%08x", deviation);
@@ -179,7 +180,7 @@ int upgradeth::writeinfo_func(QString nodestr, unsigned int deviation, unsigned 
     return 0;
 }
 
-int upgradeth::write_func(QString nodestr, unsigned char *writedata, unsigned int datalen, unsigned int crclen)
+int upgradeth::write_func(QString nodestr, unsigned char *writedata, unsigned int datalen, int crclen)
 {
     unsigned int writedata_instruct = 0x0F00F002;
     VCI_CAN_OBJ recvframeinfo[50];
@@ -349,7 +350,7 @@ int upgradeth::exec_newapp(QString nodestr)
 
 void upgradeth::upgraderun()
 {
-    qDebug()<<allchoose<<idlist<<typelist<<filename;
+    qDebug()<<allchoose<<idlist<<typelist<<filename<<icrclen;
     emit back_upgradeinfo("", "start", "");
     int count = idlist.count();
     int ret = 0, i, len;
@@ -469,7 +470,6 @@ void upgradeth::upgraderun()
     unsigned int remindlen = filesize_i;
     unsigned int step_size = 0;
     unsigned int sent_datasize = 0;
-    unsigned int crclen = 0;
 
     int successflag = 0;
 
@@ -489,14 +489,14 @@ void upgradeth::upgraderun()
                 else {
                     step_size = remindlen;
                 }
-                ret = writeinfo_func("*", sent_datasize, step_size, crclen);
+                ret = writeinfo_func("*", sent_datasize, step_size, icrclen);
                 if (ret < 0) {
                     break;
                 }
 
                 memcpy(writedata, data+sent_datasize, step_size);
                 qDebug()<<"write data";
-                write_func("*", writedata, step_size, crclen);
+                write_func("*", writedata, step_size, icrclen);
 
                 sent_datasize += step_size;
                 emit back_upgradeinfo("*", "Write", QString("data %1").arg(sent_datasize));
@@ -526,10 +526,10 @@ void upgradeth::upgraderun()
                     else {
                         step_size = remindlen;
                     }
-                    writeinfo_func(nodestr, sent_datasize, step_size, crclen);
+                    writeinfo_func(nodestr, sent_datasize, step_size, icrclen);
                     qDebug()<<"write data";
                     memcpy(writedata, data+sent_datasize, step_size);
-                    ret = write_func(nodestr, writedata, step_size, crclen);
+                    ret = write_func(nodestr, writedata, step_size, icrclen);
                     if (ret<0) {
                         successflag = 0;
                         break;

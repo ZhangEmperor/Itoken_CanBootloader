@@ -44,3 +44,6 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/./ -lControlCAN
 
 INCLUDEPATH += $$PWD/.
 DEPENDPATH += $$PWD/.
+
+RESOURCES += \
+    resource.qrc

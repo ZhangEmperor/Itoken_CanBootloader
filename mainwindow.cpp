@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     upgradebox = new QMessageBox(this);
     upgradebox->setStandardButtons(0);
-    upgradebox->setText("升级中请勿关闭");
+    upgradebox->setText(tr("升级中请勿关闭"));
 }
 
 MainWindow::~MainWindow()
@@ -159,19 +159,19 @@ void MainWindow::on_pushButton_connect_clicked()
         DWORD ret = VCI_OpenDevice(devicetype, deviceindex, 0);
         if (ret != STATUS_OK)
         {
-            QMessageBox::information(this, "提示", "打开设备失败", QMessageBox::Ok);
+            QMessageBox::information(this, tr("提示"), tr("打开设备失败"), QMessageBox::Ok);
             return;
         }
         ret = VCI_InitCAN(devicetype, deviceindex, canindex, &init_config);
         if (ret != STATUS_OK)
         {
-            QMessageBox::information(this, "提示", "初始化设备失败", QMessageBox::Ok);
+            QMessageBox::information(this, tr("提示"), tr("初始化设备失败"), QMessageBox::Ok);
             return;
         }
         ret = VCI_StartCAN(devicetype, deviceindex, canindex);
         if (ret != STATUS_OK)
         {
-            QMessageBox::information(this, "提示", "开始设备失败", QMessageBox::Ok);
+            QMessageBox::information(this, tr("提示"), tr("开始设备失败"), QMessageBox::Ok);
             return;
         }
 
@@ -334,7 +334,7 @@ void MainWindow::on_pushButton_clicked()
 void MainWindow::on_pushButton_fresh_clicked()
 {
     if (!connect_flag) {
-        QMessageBox::warning(this, "提示", "请先连接设备", QMessageBox::Ok);
+        QMessageBox::warning(this, tr("提示"), tr("请先连接设备"), QMessageBox::Ok);
         return ;
     }
     VCI_CAN_OBJ sendframeinfo;
@@ -346,13 +346,13 @@ void MainWindow::on_pushButton_fresh_clicked()
     sendframeinfo.DataLen = 0;
     int ret = VCI_Transmit(devicetype, deviceindex, canindex, &sendframeinfo, 1);
     if (ret <0) {
-        QMessageBox::warning(this, "提示", "请先连接设备", QMessageBox::Ok);
+        QMessageBox::warning(this, tr("提示"), tr("请先连接设备"), QMessageBox::Ok);
         return ;
     }
 
     refreshhandle->setrunflag(true);
     emit refreshsig();
-    QMessageBox::warning(this, "提示", "停止", QMessageBox::Ok);
+    QMessageBox::warning(this, tr("提示"), tr("停止"), QMessageBox::Ok);
     refreshhandle->setrunflag(false);
 }
 
@@ -455,7 +455,7 @@ void MainWindow::on_pushButton_reset_clicked()
     sendframeinfo.Data[3] = 0xAA;
     int ret = VCI_Transmit(devicetype, deviceindex, canindex, &sendframeinfo, 1);
     if (ret <0) {
-        QMessageBox::warning(this, "提示", "请先连接设备", QMessageBox::Ok);
+        QMessageBox::warning(this, tr("提示"), tr("请先连接设备"), QMessageBox::Ok);
         return ;
     }
 }

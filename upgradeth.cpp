@@ -482,6 +482,7 @@ void upgradeth::upgraderun()
          * write data */
         while (1) {
             erase_func("*");
+
             do {
                 if (remindlen > 1024) {
                     step_size = 1024;
@@ -489,6 +490,7 @@ void upgradeth::upgraderun()
                 else {
                     step_size = remindlen;
                 }
+                QThread::sleep(1);
                 ret = writeinfo_func("*", sent_datasize, step_size, icrclen);
                 if (ret < 0) {
                     break;
@@ -496,6 +498,7 @@ void upgradeth::upgraderun()
 
                 memcpy(writedata, data+sent_datasize, step_size);
                 qDebug()<<"write data";
+                QThread::sleep(1);
                 write_func("*", writedata, step_size, icrclen);
 
                 sent_datasize += step_size;
